@@ -1,0 +1,59 @@
+<VirtualHost 192.168.50.10:80>
+DocumentRoot "/var/www/html"
+ServerName html.dev
+ServerAlias www.html.dev
+ErrorLog "/var/log/httpd/html.error"
+CustomLog "/var/log/httpd/html.access" combined
+
+<Directory "/var/www/html">
+DirectoryIndex index.html index.php
+Options FollowSymLinks
+AllowOverride All
+Require all granted
+Options -Indexes
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
+</Directory>
+</VirtualHost>
+
+<VirtualHost 192.168.50.20:80>
+DocumentRoot "/var/www/symfony/public"
+ServerName symfony.dev
+ServerAlias www.symfony.dev
+ErrorLog "/var/log/httpd/symfony.error"
+CustomLog "/var/log/httpd/symfony.access" combined
+
+<Directory "/var/www/symfony/public">
+DirectoryIndex index.html index.php
+Options FollowSymLinks
+AllowOverride All
+Require all granted
+Options -Indexes
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
+</Directory>
+</VirtualHost>
+
+<VirtualHost 192.168.50.30:80>
+DocumentRoot "/var/www/laravel/public"
+ServerName laravel.dev
+ServerAlias www.laravel.dev
+ErrorLog "/var/log/httpd/laravel.error"
+CustomLog "/var/log/httpd/laravel.access" combined
+
+<Directory "/var/www/laravel/public">
+DirectoryIndex index.html index.php
+Options FollowSymLinks
+AllowOverride All
+Require all granted
+Options -Indexes
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]
+</Directory>
+</VirtualHost>

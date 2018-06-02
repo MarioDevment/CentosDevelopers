@@ -1,0 +1,19 @@
+firewall_allowed_tcp_ports:
+  - "21"    #ftp
+  - "22"    #ssh
+  - "80"    #http
+  - "115"   #sftp
+  - "443"   #SSL - HTTPS
+  - "3306"  #MySQL
+  - "8080"  #Alternativo HTTP
+  - "8081"  #Alternativo ssl
+  - "8081"  #Alternativo mysql
+  - "9200"  #ElasticSearch
+  - "5601"  #Kibana
+  - "5672"  #RabbitMQ
+  - "5673"  #Rabbit
+  - "15672" #Rabbit
+  - "6379"  #Redis
+firewall_allowed_udp_ports: 
+  - "9200"  #ElasticSearch
+  - "5601"  #Kibana

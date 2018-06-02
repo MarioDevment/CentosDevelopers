@@ -1,0 +1,3 @@
+blackfire_packages:
+  - blackfire-agent
+  - blackfire-php

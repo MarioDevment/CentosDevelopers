@@ -1,0 +1,53 @@
+VAGRANT_API_VERSION = 2
+
+Vagrant.require_version ">= 2"
+
+required_plugins = %w( vagrant-vbguest )
+required_plugins.each do |plugin|
+  system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
+end
+
+Vagrant.configure(VAGRANT_API_VERSION) do |config|
+  config.vm.box = "centos/7"
+   
+  config.vm.synced_folder "../sites", "/var/www", 
+    id: "vagrant-websites", 
+    :nfs => true, 
+    :mount_options => ['rw', 'vers=3', 'tcp', 'fsc', 'actimeo=2']
+
+  config.vm.synced_folder "../ansible", "/ansible", 
+    id: "ansible-provision", 
+    :nfs => true
+  
+  
+  #WebServer
+  config.vm.define "web", primary: true do |webserver|
+    webserver.vm.hostname = "WebServer"
+
+    webserver.vm.provider :virtualbox do |vb|
+        vb.memory = 4096
+        vb.cpus = 2
+    end
+
+    webserver.vm.network "forwarded_port", guest: 80, host: 8080 #Web you can change to 80
+    webserver.vm.network "forwarded_port", guest: 443, host: 8081 #ssl
+    webserver.vm.network "forwarded_port", guest: 3306, host: 3306 #MySQL
+    webserver.vm.network "forwarded_port", guest: 9200, host: 9200 #ElasticSearch
+    webserver.vm.network "forwarded_port", guest: 5601, host: 5601 #Kibana 
+    webserver.vm.network "forwarded_port", guest: 5672, host: 5672 #Rabbit
+    webserver.vm.network "forwarded_port", guest: 5673, host: 5673 #Rabbit
+    webserver.vm.network "forwarded_port", guest: 15672, host: 15672 #Rabbit
+    webserver.vm.network "forwarded_port", guest: 6379, host: 6379 #Redis
+
+    webserver.vm.network "private_network", ip: "192.168.50.10" #All html
+    webserver.vm.network "private_network", ip: "192.168.50.20" #Symfony Example
+    webserver.vm.network "private_network", ip: "192.168.50.30" #Laravel Example
+    
+    webserver.vm.provision :shell, path: "provision/provision.sh" #Install Ansible
+    webserver.vm.provision :shell, path: "provision/web.sh" #Install roles and execute ansible
+
+    webserver.vm.provision "shell", inline: "sudo apachectl start", run: "always"
+    webserver.vm.provision "shell", inline: "sudo /sbin/chkconfig --add elasticsearch", run: "always"
+    webserver.vm.provision "shell", inline: "sudo service elasticsearch start", run: "always"
+  end
+end

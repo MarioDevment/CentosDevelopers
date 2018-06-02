@@ -1,0 +1,11 @@
+/vagrant/.vagrant/
+/ansible/web.retry
+/ansible/services.retry
+
+# exclude everything
+/sites/*
+
+# exception to the rule
+!sites/.gitignore
+!sites/laravel
+!sites/symfony/

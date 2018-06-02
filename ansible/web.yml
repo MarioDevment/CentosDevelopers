@@ -1,0 +1,93 @@
+---
+- name: Server Config LAMP
+  hosts: "web"
+  become: true
+  become_user: root
+  vars:
+    - redis_bind: 0.0.0.0
+  pre_tasks:
+    - name: Install the MySQL repo.
+      yum:
+        name: http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+        state: present
+      when: ansible_os_family == "RedHat"
+  
+    - name: Override variables for MySQL (RedHat).
+      set_fact:
+        mysql_daemon: mysqld
+        mysql_packages: ['mysql-server']
+        mysql_log_error: /var/log/mysqld.err
+        mysql_syslog_tag: mysqld
+        mysql_pid_file: /var/run/mysqld/mysqld.pid
+        mysql_socket: /var/lib/mysql/mysql.sock
+      when: ansible_os_family == "RedHat"
+  roles:
+    
+    - role: kbrebanov.selinux
+      selinux_state: disabled
+
+    - role: geerlingguy.repo-remi
+    - role: geerlingguy.repo-epel
+     
+    - role: geerlingguy.firewall
+    - role: geerlingguy.apache
+    - role: geerlingguy.php-versions
+    - role: geerlingguy.php
+    - role: geerlingguy.blackfire
+    - role: geerlingguy.apache-php-fpm
+    - role: geerlingguy.composer
+    - role: geerlingguy.mysql
+    - role: geerlingguy.php-mysql
+    - role: geerlingguy.nodejs
+    - role: geerlingguy.git
+
+    - role: geerlingguy.ntp
+      ntp_timezone: Europe/Madrid
+
+    - role: MarioDevment.yarn
+
+    - role: DavidWittman.redis
+    - role: MarioDevment.rabbitmq
+    - role: MarioDevment.java8
+    - role: MarioDevment.elasticsearch
+    - role: MarioDevment.kibana
+    
+  tasks:
+    - name: Install latest version of "mongodb" and "install-recommends"
+      yum:
+        name: mongodb
+        state: latest
+
+    - name: Install latest version of "php-zip" and "recommends"
+      yum:
+        name: php-zip
+        state: latest
+
+    - name: Install latest version of "VIM" and "recommends"
+      yum:
+        name: vim
+        state: latest
+
+    - name: Install latest version of "curl" and "recommends"
+      yum:
+        name: curl
+        state: latest
+
+    - name: Install latest version of "wget" and "recommends"
+      yum:
+        name: wget
+        state: latest
+
+    - name: Install latest version of "pecl-zip" and "recommends"
+      yum:
+        name: php71-php-pecl-zip
+        state: latest
+
+    - name: Configure VirtualHost apache
+      template: src=templates/vhosts.conf.base dest=/etc/httpd/conf.d/vhosts.conf
+
+    - name: Restart Apache
+      command: "systemctl restart httpd.service"
+
+    - name: Create .my.cnf MySQL
+      template: src=files/my.cnf dest=/home/vagrant/.my.cnf

@@ -1,0 +1,22 @@
+apache_allow_override: "All"
+apache_options: "-Indexes +FollowSymLinks"
+
+apache_remove_default_vhost: true
+
+apache_mods_enabled:
+  - ldap.conf
+  - ldap.load
+  - ssl.load
+  - rewrite.load
+  - authnz_ldap.load
+  - rewrite_module
+apache_mods_disabled: []
+
+apache_create_vhosts: false
+apache_global_vhost_settings: |
+  DirectoryIndex index.php index.html
+
+#apache_vhosts:
+#  - servername: "www.symfony.example"
+#    serveralias: "symfony.example"
+#    documentroot: "/var/www/symfony/public"
