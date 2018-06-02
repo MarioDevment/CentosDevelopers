@@ -1,5 +1,5 @@
-php_enablerepo: "remi-php71"
-php_version: "7.1"
+php_enablerepo: "remi-php72"
+php_version: "7.2"
 
 php_executable: "php"
 

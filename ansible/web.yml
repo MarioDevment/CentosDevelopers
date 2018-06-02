@@ -83,6 +83,11 @@
         name: php71-php-pecl-zip
         state: latest
 
+    - name: Install latest version of "pecl-zip" and "recommends"
+      yum:
+        name: php72-php-pecl-zip
+        state: latest
+
     - name: Configure VirtualHost apache
       template: src=templates/vhosts.conf.base dest=/etc/httpd/conf.d/vhosts.conf
 

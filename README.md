@@ -19,6 +19,7 @@ Web:
 - Composer
 - NodeJS
 - GIT
+- Yarn
 - php-zip (for composer)
 - Blackfire
 
