@@ -7,13 +7,52 @@ required_plugins.each do |plugin|
   system "vagrant plugin install #{plugin}" unless Vagrant.has_plugin? plugin
 end
 
+module OS
+    def OS.windows?
+        (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def OS.mac?
+        (/darwin/ =~ RUBY_PLATFORM) != nil
+    end
+
+    def OS.unix?
+        !OS.windows?
+    end
+
+    def OS.linux?
+        OS.unix? and not OS.mac?
+    end
+end
+
+if OS.windows?
+    puts "Vagrant launched from windows."
+elsif OS.mac?
+    puts "Vagrant launched from mac."
+elsif OS.unix?
+    puts "Vagrant launched from unix."
+elsif OS.linux?
+    puts "Vagrant launched from linux."
+else
+    puts "Vagrant launched from unknown platform."
+end
+
 Vagrant.configure(VAGRANT_API_VERSION) do |config|
   config.vm.box = "centos/7"
-   
-  config.vm.synced_folder "../sites", "/var/www", 
+  
+  if OS.windows?
+    config.vm.synced_folder "../sites", "/var/www", 
+    id: "vagrant-websites", 
+    :nfs => true, 
+    mount_options: ["dmode=777,fmode=777"]
+  else
+    # Asumimos que la configuarcion para MACOS es la buena generica para todos los OS de forma generica
+    config.vm.synced_folder "../sites", "/var/www", 
     id: "vagrant-websites", 
     :nfs => true, 
     :mount_options => ['rw', 'vers=3', 'tcp', 'fsc', 'actimeo=2']
+  end
+    
 
   config.vm.synced_folder "../ansible", "/ansible", 
     id: "ansible-provision", 
